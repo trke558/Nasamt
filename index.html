@@ -1,0 +1,128 @@
+<!DOCTYPE html><html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>نسمات إيمانية - الأذكار</title>
+  <style>
+    body { font-family: Tahoma; background: #f7f7f7; margin: 0; padding: 0; }
+    header { background: #27ae60; color: white; padding: 20px; text-align: center; font-size: 26px; }
+    nav { background: #2ecc71; padding: 10px; text-align: center; }
+    nav button { margin: 5px; padding: 10px 15px; border: none; border-radius: 5px; background: #1abc9c; color: white; cursor: pointer; font-size: 16px; }
+    nav button:hover { background: #16a085; }
+    .container { max-width: 800px; margin: auto; padding: 20px; }
+    .zikr-card { background: white; padding: 15px; margin-bottom: 15px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .counter { margin-top: 10px; font-weight: bold; }
+    button.counter-btn { margin-top: 10px; padding: 6px 12px; background-color: #34495e; color: white; border: none; border-radius: 4px; cursor: pointer; }
+    button.counter-btn:hover { background-color: #2c3e50; }
+  </style>
+</head>
+<body>
+  <header>🌿 نسمات إيمانية - الأذكار</header>
+  <nav>
+    <button onclick="showSection('morning')">🌅 الصباح</button>
+    <button onclick="showSection('evening')">🌙 المساء</button>
+    <button onclick="showSection('prayer')">🕌 بعد الصلاة</button>
+    <button onclick="showSection('sleep')">😴 النوم</button>
+  </nav>  <div class="container">
+    <div id="morning" class="section" style="display:none">
+      <div class="zikr-card">
+        <p>أصبحنا وأصبح الملك لله...</p>
+        <div class="counter" id="m1">التكرار: 1</div>
+        <button class="counter-btn" onclick="decrement('m1')">تمّ ✅</button>
+      </div>
+      <div class="zikr-card">
+        <p>اللهم بك أصبحنا وبك أمسينا...</p>
+        <div class="counter" id="m2">التكرار: 1</div>
+        <button class="counter-btn" onclick="decrement('m2')">تمّ ✅</button>
+      </div>
+    </div><div id="evening" class="section" style="display:none">
+  <div class="zikr-card">
+    <p>اللّهُـمَّ أَمْسَيْنا وأَمْسَى المُـلكُ لله...</p>
+    <div class="counter" id="e1">التكرار: 1</div>
+    <button class="counter-btn" onclick="decrement('e1')">تمّ ✅</button>
+  </div>
+  <div class="zikr-card">
+    <p>اللّهُـمَّ إِنِّي أَمْسَيْتُ أُشْهِدُك...</p>
+    <div class="counter" id="e2">التكرار: 1</div>
+    <button class="counter-btn" onclick="decrement('e2')">تمّ ✅</button>
+  </div>
+</div>
+
+<div id="prayer" class="section" style="display:none">
+  <div class="zikr-card">
+    <p>أستغفر الله (ثلاثاً)...</p>
+    <div class="counter" id="p1">التكرار: 3</div>
+    <button class="counter-btn" onclick="decrement('p1')">تمّ ✅</button>
+  </div>
+  <div class="zikr-card">
+    <p>لا إله إلا الله وحده لا شريك له...</p>
+    <div class="counter" id="p2">التكرار: 1</div>
+    <button class="counter-btn" onclick="decrement('p2')">تمّ ✅</button>
+  </div>
+</div>
+
+<div id="sleep" class="section" style="display:none">
+  <div class="zikr-card">
+    <p>بِاسْمِكَ رَبِّـي وَضَـعْتُ جَنْـبي...</p>
+    <div class="counter" id="s1">التكرار: 1</div>
+    <button class="counter-btn" onclick="decrement('s1')">تمّ ✅</button>
+  </div>
+  <div class="zikr-card">
+    <p>اللّهُـمَّ قِني عَذابَـكَ يَومَ تَبعَـثُ عِبادَك</p>
+    <div class="counter" id="s2">التكرار: 1</div>
+    <button class="counter-btn" onclick="decrement('s2')">تمّ ✅</button>
+  </div>
+</div>
+
+  </div>  <script>
+    function showSection(id) {
+      document.querySelectorAll('.section').forEach(sec => sec.style.display = 'none');
+      document.getElementById(id).style.display = 'block';
+    }
+
+    function decrement(id) {
+      const el = document.getElementById(id);
+      let count = parseInt(el.innerText.replace(/\D/g, ''));
+      if (count > 0) {
+        count--;
+        el.innerText = 'التكرار: ' + count;
+        if (id.startsWith('m') || id.startsWith('e')) {
+          localStorage.setItem(id, count);
+        }
+      }
+    }
+
+    function restoreCounts() {
+      ['m1', 'm2', 'e1', 'e2'].forEach(id => {
+        const saved = localStorage.getItem(id);
+        if (saved !== null) {
+          const el = document.getElementById(id);
+          if (el) el.innerText = 'التكرار: ' + saved;
+        }
+      });
+    }
+
+    function scheduleNotification(hour, minute, text) {
+      const now = new Date();
+      const then = new Date();
+      then.setHours(hour, minute, 0, 0);
+      if (then < now) then.setDate(then.getDate() + 1);
+      const delay = then - now;
+      setTimeout(() => {
+        new Notification(text);
+        scheduleNotification(hour, minute, text);
+      }, delay);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      restoreCounts();
+      if ("Notification" in window) {
+        Notification.requestPermission().then(permission => {
+          if (permission === "granted") {
+            scheduleNotification(6, 0, '🌅 لا تنسَ أذكار الصباح');
+            scheduleNotification(18, 0, '🌙 لا تنسَ أذكار المساء');
+          }
+        });
+      }
+    });
+  </script></body>
+</html>
